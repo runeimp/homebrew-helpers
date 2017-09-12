@@ -1,4 +1,4 @@
-Homebrew Helpers v0.2.0
+Homebrew Helpers v0.3.0
 =======================
 
 A collection of helpers to extend or assist the wonderful Homebrew package manager for macOS/OS X.
@@ -14,17 +14,37 @@ Extends Homebrews list of subcommands. After doing a `brew update` there are oft
 
 #### `brew url -c <package>`
 
-Specifies to use _Google Chrome_ instead of the default browser to review the packages website.
+Also `brew url --chrome <package>`. Specifies to use _Google Chrome_ instead of the default browser to review the packages website.
 
 
 #### `brew url -d <package>`
 
-Specifies to use the default browser (_Safari_) instead of Google Chrome to review the packages website.
+Also `brew url --default <package>`. Specifies to use the default OS browser (_Safari_) to review the packages website.
+
+
+#### `brew url -f <package>`
+
+Also `brew url --firefox <package>`. Specifies to use _Firefox_ instead of the default browser to review the packages website.
+
+
+#### `brew url -o <package>`
+
+Also `brew url --opera <package>`. Specifies to use _Opera_ instead of the default browser to review the packages website.
+
+
+#### `brew url -s <package>`
+
+Also `brew url --safari <package>`. Specifies to use _Safari_ instead of the default browser to review the packages website.
+
+
+#### `brew url -v`
+
+Also `brew url --version` can be used to display the version of `brew-url`.
 
 
 ### `brewlist`
 
-This simple helper creates the file `brew-list.md` wherever you are in your file system with all the packages currently installed on your system.
+This simple helper creates the file `${USER}-brew-list.md` wherever you are in your file system with all the packages currently installed on your system.
 
 
 #### `brewlist -e <file_extension>`
@@ -32,9 +52,9 @@ This simple helper creates the file `brew-list.md` wherever you are in your file
 Also `brewlist --ext` and `brewlist --extension` can be used to specify a different file extension than `.md`.
 
 
-#### `brewlist -f <basename>`
+#### `brewlist -f <base_filename>`
 
-Also `brewlist --file` can be used to specify the base filename instead of `brew-list`.
+Also `brewlist --file` can be used to specify the base filename instead of `${USER}-brew-list`.
 
 
 #### `brewlist -p <prefix>`
