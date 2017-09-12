@@ -7,6 +7,7 @@
 #####
 # ChangeLog:
 # ----------
+# 2017-09-07  1.2.1      Updated URL handling
 # 2017-04-04  1.2.0      Added the --chrome, --default, -f, --firefox, -o, --opera, -s, --safari, -v, and --version POSIX and GNU options.
 # 2017-03-15  1.1.0      Added -c and -d options and smarter parsing. 
 # 2016-05-25  1.0.0      Initial script creation?
@@ -18,7 +19,7 @@
 readonly APP_AUTHOR='RuneImp <runeimp@gmail.com>'
 readonly APP_LICENSE='MIT'
 readonly APP_NAME='Homebrew URL Launcher'
-readonly APP_VERSION='1.2.0'
+readonly APP_VERSION='1.2.1'
 readonly CLI_NAME='brew-url'
 
 readonly APP_LABEL="$APP_NAME v$APP_VERSION"
@@ -95,6 +96,6 @@ fi
 if [[ $exit_code -gt 0 ]]; then
 	echo "Couldn't find app in Homebrew" 1>&2
 else
-	url=$(echo "$result" | grep -v caskroom | egrep ^https?:.* )
+	url=$(echo "$result" | grep -v caskroom | grep -E ^https?:.* | head -1)
 	open -a "$browser" "$url"
 fi
