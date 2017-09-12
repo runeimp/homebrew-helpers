@@ -1,18 +1,30 @@
 #!/usr/bin/env bash
 ###################
-# brewlist v0.2.0
+# BrewList
 #
 # @author RuneImp <runeimp@gmail.com>
 # @licenses http://opensource.org/licenses/MIT
 #
+#####
+# ChangeLog
+# ---------
+# 2016-07-13  0.3.0      Updated filename generation with $USER
+# 2016-05-12  0.2.0      Did something...
+# 2016-00-00  0.1.0      Initial script creation
+#
+#####
+# ToDo
+# ----
+# [] Use brew list and demark leaf items
+#
 #
 
 APP_NAME="BrewList"
-APP_VERSION="0.2.0"
+APP_VERSION="0.3.0"
 APP_LABEL="$APP_NAME v$APP_VERSION"
 
 conf=""
-file="brew-list"
+base_filename="${USER}-brew-list"
 file_ext=".md"
 i=0
 list=""
@@ -38,7 +50,7 @@ until [[ $# -eq 0 ]]; do
 			shift
 			;;
 		-f | --file)
-			file="$2"
+			base_filename="$2"
 			shift
 			;;
 		-p | --prefix)
@@ -61,12 +73,12 @@ until [[ $# -eq 0 ]]; do
 	shift
 done
 
-filename="${prefix}${file}${suffix}${file_ext}"
+filename="${prefix}${base_filename}${suffix}${file_ext}"
 
 # echo "\$filename: $filename"
 # exit 69
 
-while [[ ${#title_underline} < $title_length ]]; do
+while [[ ${#title_underline} -lt $title_length ]]; do
 	title_underline="${title_underline}="
 done
 
