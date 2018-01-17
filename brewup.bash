@@ -7,6 +7,7 @@
 #####
 # ChangeLog:
 # ----------
+# 2018-01-10  0.1.1      Updated the output a bit
 # 2017-08-10  0.1.0      Initial creation
 #
 
@@ -16,7 +17,7 @@
 readonly APP_AUTHOR='RuneImp <runeimp@gmail.com>'
 readonly APP_LICENSE='MIT'
 readonly APP_NAME='Homebrew Update, Log, and List'
-readonly APP_VERSION='0.1.0'
+readonly APP_VERSION='0.1.1'
 readonly CLI_NAME='brew-up'
 
 readonly APP_LABEL="$APP_NAME v$APP_VERSION"
@@ -27,16 +28,16 @@ if [[ $# -eq 0 ]]; then
 
 	term-wipe
 	echo "Updating Homebrew..."
-	# brew update | tee "$update_log"
-	update_result="$(brew update)"
-	echo -e "$update_result"
-	echo -e "$update_result" > "$update_log"
+	brew update | tee "$update_log"
+	# update_result="$(brew update)"
+	# echo -e "$update_result"
+	# echo -e "$update_result" > "$update_log"
 else
 	until [[ $# -eq 0 ]]; do
 		case "$1" in
 			-l | 'last' | 'list')
 				update_log=$(ls ~/brew-update_* | tail -1)
-				echo "Viewing ~/${update_log}"
+				echo "Viewing ${update_log}"
 				cat "$update_log"
 				;;
 			*)

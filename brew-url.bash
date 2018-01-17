@@ -7,6 +7,7 @@
 #####
 # ChangeLog:
 # ----------
+# 2017-09-12  1.3.0      Added BROWSER_NAME env var checking, and config parsing
 # 2017-09-07  1.2.1      Updated URL handling
 # 2017-04-04  1.2.0      Added the --chrome, --default, -f, --firefox, -o, --opera, -s, --safari, -v, and --version POSIX and GNU options.
 # 2017-03-15  1.1.0      Added -c and -d options and smarter parsing. 
@@ -19,50 +20,73 @@
 readonly APP_AUTHOR='RuneImp <runeimp@gmail.com>'
 readonly APP_LICENSE='MIT'
 readonly APP_NAME='Homebrew URL Launcher'
-readonly APP_VERSION='1.2.1'
+readonly APP_VERSION='1.3.0'
 readonly CLI_NAME='brew-url'
 
 readonly APP_LABEL="$APP_NAME v$APP_VERSION"
 
+
 #
 # CONSTANTS
 #
-readonly BROWSWER_CHROME='Google Chrome'
-readonly BROWSWER_FIREFOX='Firefox'
-readonly BROWSWER_OPERA='Opera'
-readonly BROWSWER_SAFARI='Safari'
+readonly BROWSER_CHROME='Google Chrome'
+readonly BROWSER_FIREFOX='Firefox'
+readonly BROWSER_OPERA='Opera'
+readonly BROWSER_SAFARI='Safari'
+
 
 #
 # VARIABLES
 #
-browser="$BROWSWER_OPERA"
+if [[ -n "$BROWSER_NAME" ]]; then
+	browser="$BROWSER_NAME"
+else
+	browser="$BROWSER_SAFARI"
+fi
 declare -i caskroom=1
+
+
+#
+# LOAD CONFIG
+#
+if [[ -e "${XDG_CONFIG_HOME}/brew-url" ]]; then
+	echo "Loading... ${XDG_CONFIG_HOME}/brew-url"
+	source "${XDG_CONFIG_HOME}/brew-url"
+elif [[ -e "${HOME}/.config/brew-url" ]]; then
+	echo "Loading... ${HOME}/.config/brew-url"
+	source "${HOME}/.config/brew-url"
+elif [[ -e "${HOME}/.local/brew-url" ]]; then
+	echo "Loading... ${HOME}/.local/brew-url"
+	source "${HOME}/.local/brew-url"
+elif [[ -e "${HOME}/.brew-url" ]]; then
+	echo "Loading... ${HOME}/.brew-url"
+	source "${HOME}/.brew-url"
+fi
+
 
 #
 # OPTION PARSING
 #
-# echo "\$@: $@"
-
 until [[ $# -eq 0 ]]; do
 	case "$1" in
 		-c | --chrome)
-			browser="$BROWSWER_CHROME"
+			browser="$BROWSER_CHROME"
 			;;
 		-d | --default)
-			browser="$BROWSWER_SAFARI"
+			browser="$BROWSER_SAFARI"
 			;;
 		[Cc]askroom*)
 			caskroom=0
 			app="$1"
 			;;
 		-f | --firefox)
-			browser="$BROWSWER_FIREFOX"
+			browser="$BROWSER_FIREFOX"
 			;;
 		-o | --opera)
-			browser="$BROWSWER_OPERA"
+			browser="$BROWSER_OPERA"
 			;;
 		-s | --safari)
-			browser="$BROWSWER_SAFARI"
+			browser="$BROWSER_SAFARI"
 			;;
 		-v | --version)
 			echo "$APP_LABEL"
@@ -79,6 +103,7 @@ done
 # echo "browser: $browser"
 # echo "caskroom: $caskroom"
 # echo "app: $app"
+# exit 69
 
 result=$(brew info "$app" 2>&1)
 exit_code=$?

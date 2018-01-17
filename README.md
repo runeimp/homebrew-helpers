@@ -1,4 +1,4 @@
-Homebrew Helpers v0.3.1
+Homebrew Helpers v0.4.0
 =======================
 
 A collection of helpers to extend or assist the wonderful Homebrew package manager for macOS/OS X.
@@ -9,7 +9,13 @@ Helpers
 
 ### `brew-url`
 
-Extends Homebrews list of subcommands. After doing a `brew update` there are often many packages I want to readup on via their website. But using `brew info <package>` and then having to copy & paste the URL into my browser is cumbersom. And as most good developers; I'm sooo lazy. So I created this subcommand so you can now simply `brew url wget` to open up the website for `wget` in Chrome.
+Extends Homebrews list of subcommands. After doing a `brew update` there are often many packages I want to readup on via their website. But using `brew info <package>` and then having to copy & paste the URL into my browser is cumbersom. And as most good developers; I'm sooo lazy. So I created this subcommand so you can now simply `brew url wget` to open up the website for `wget` in your default browser.
+
+The default browser is either the config variable `browser`, the environment variable `BROWSER_NAME`, or OS default (Safari).
+
+Config checking now looks for either `${XDG_CONFIG_HOME}/brew-url` or `${HOME}/.brew-url` so you can set the script variable `browser` to the app name of the browser you wish `brew-url` to use as it's default.
+
+The config variable `browser` takes precedence over the environment variable `BROWSER_NAME`. And the environment variable takes precedence over the OS default.
 
 
 #### `brew url -c <package>`
@@ -19,7 +25,7 @@ Also `brew url --chrome <package>`. Specifies to use _Google Chrome_ instead of 
 
 #### `brew url -d <package>`
 
-Also `brew url --default <package>`. Specifies to use the default OS browser (_Safari_) to review the packages website.
+Also `brew url --default <package>`. Specifies to use the default OS browser (typically _Safari_) to review the packages website.
 
 
 #### `brew url -f <package>`
