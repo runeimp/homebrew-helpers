@@ -7,6 +7,7 @@
 #####
 # ChangeLog:
 # ----------
+# 2018-01-17  1.3.1      Added debuging via -D and --debug options
 # 2017-09-12  1.3.0      Added BROWSER_NAME env var checking, and config parsing
 # 2017-09-07  1.2.1      Updated URL handling
 # 2017-04-04  1.2.0      Added the --chrome, --default, -f, --firefox, -o, --opera, -s, --safari, -v, and --version POSIX and GNU options.
@@ -20,7 +21,7 @@
 readonly APP_AUTHOR='RuneImp <runeimp@gmail.com>'
 readonly APP_LICENSE='MIT'
 readonly APP_NAME='Homebrew URL Launcher'
-readonly APP_VERSION='1.3.0'
+readonly APP_VERSION='1.3.1'
 readonly CLI_NAME='brew-url'
 
 readonly APP_LABEL="$APP_NAME v$APP_VERSION"
@@ -44,24 +45,7 @@ else
 	browser="$BROWSER_SAFARI"
 fi
 declare -i caskroom=1
-
-
-#
-# LOAD CONFIG
-#
-if [[ -e "${XDG_CONFIG_HOME}/brew-url" ]]; then
-	echo "Loading... ${XDG_CONFIG_HOME}/brew-url"
-	source "${XDG_CONFIG_HOME}/brew-url"
-elif [[ -e "${HOME}/.config/brew-url" ]]; then
-	echo "Loading... ${HOME}/.config/brew-url"
-	source "${HOME}/.config/brew-url"
-elif [[ -e "${HOME}/.local/brew-url" ]]; then
-	echo "Loading... ${HOME}/.local/brew-url"
-	source "${HOME}/.local/brew-url"
-elif [[ -e "${HOME}/.brew-url" ]]; then
-	echo "Loading... ${HOME}/.brew-url"
-	source "${HOME}/.brew-url"
-fi
+declare -i debug=1
 
 
 #
@@ -74,6 +58,9 @@ until [[ $# -eq 0 ]]; do
 			;;
 		-d | --default)
 			browser="$BROWSER_SAFARI"
+			;;
+		-D | --debug)
+			debug=0
 			;;
 		[Cc]askroom*)
 			caskroom=0
@@ -104,6 +91,24 @@ done
 # echo "caskroom: $caskroom"
 # echo "app: $app"
 # exit 69
+
+
+#
+# LOAD CONFIG
+#
+if [[ -e "${XDG_CONFIG_HOME}/brew-url" ]]; then
+	[ $debug -eq 0 ] && echo "Loading... ${XDG_CONFIG_HOME}/brew-url" 1>&2
+	source "${XDG_CONFIG_HOME}/brew-url"
+elif [[ -e "${HOME}/.config/brew-url" ]]; then
+	[ $debug -eq 0 ] && echo "Loading... ${HOME}/.config/brew-url" 1>&2
+	source "${HOME}/.config/brew-url"
+elif [[ -e "${HOME}/.local/brew-url" ]]; then
+	[ $debug -eq 0 ] && echo "Loading... ${HOME}/.local/brew-url" 1>&2
+	source "${HOME}/.local/brew-url"
+elif [[ -e "${HOME}/.brew-url" ]]; then
+	[ $debug -eq 0 ] && echo "Loading... ${HOME}/.brew-url" 1>&2
+	source "${HOME}/.brew-url"
+fi
 
 result=$(brew info "$app" 2>&1)
 exit_code=$?

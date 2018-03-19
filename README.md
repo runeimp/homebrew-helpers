@@ -50,7 +50,7 @@ Also `brew url --version` can be used to display the version of `brew-url`.
 
 ### `brewlist`
 
-This simple helper creates the file `${USER}-brew-list.md` wherever you are in your file system with all the packages currently installed on your system.
+This simple helper creates the file `${USER}-brew-list_YYYY-MM-DD_HHMMSS.md` wherever you are in your file system with all the packages currently installed on your system.
 
 
 #### `brewlist -e <file_extension>`
@@ -80,18 +80,29 @@ Also `brewlist --version` can be used to display the version of `brewlist`.
 
 ### `brewup`
 
-Runs `brew update` and saves the output to a dated logfile in your home directory.
+Runs `brew update` and saves the output to a dated logfile in your brewup directory which will be one of the following.
+
+- $XDG_CONFIG_HOME/brewup
+- $HOME/.local/brewup
+- $HOME/.brewup
+
+if `XDG_CONFIG_HOME` is defined then `$XDG_CONFIG_HOME/brewup` will be created. If not and `$HOME/.local` exists then `$HOME/.local/brewup` will be created. Else `$HOME/.brewup` will be created.
 
 
 #### `brewup list`
 
 If you run either of `brewup -l`, `brewup last`, or `brewup list` you will get the output of the last logfile created.
 
+#### TODO
+
+- Automatically archive (gzip) older logs to save space.
+- Automatically delete logs after a certain amount of time weather they are archived or not.
+
 
 Installation
 ------------
 
-Copy the scripts into your `bin` directory. All commands should work as expected. In the bin directory you can make sure the command is executable with something like `chmod +x brew*` for the current user only. But this may not be necessary. Test with `brew url wget` in Terminal (or iTerm2, etc.) to make sure it's working as expected.
+Copy or symlink the scripts into your prefered `bin` directory. All commands should work as expected. In the bin directory you can make sure the command is executable with something like `chmod +x brew*` for the current user only. But this may not be necessary. Test with `brew url wget` in Terminal (or iTerm2, etc.) to make sure it's working as expected.
 
 ### Example Installation
 
@@ -115,4 +126,5 @@ Mac:~ runeimp$
 Guarantee
 ---------
 
-It works on my system. I make no statement of fitness for your usage. It makes me happy. But use at your own risk. :angel:
+It works on my system. I make no statement of fitness for your usage. It makes me happy. Use at your own risk. :angel:
+
