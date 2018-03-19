@@ -1,4 +1,4 @@
-Homebrew Helpers v0.3.1
+Homebrew Helpers v0.4.0
 =======================
 
 A collection of helpers to extend or assist the wonderful Homebrew package manager for macOS/OS X.
@@ -9,7 +9,13 @@ Helpers
 
 ### `brew-url`
 
-Extends Homebrews list of subcommands. After doing a `brew update` there are often many packages I want to readup on via their website. But using `brew info <package>` and then having to copy & paste the URL into my browser is cumbersom. And as most good developers; I'm sooo lazy. So I created this subcommand so you can now simply `brew url wget` to open up the website for `wget` in Chrome.
+Extends Homebrews list of subcommands. After doing a `brew update` there are often many packages I want to readup on via their website. But using `brew info <package>` and then having to copy & paste the URL into my browser is cumbersom. And as most good developers; I'm sooo lazy. So I created this subcommand so you can now simply `brew url wget` to open up the website for `wget` in your default browser.
+
+The default browser is either the config variable `browser`, the environment variable `BROWSER_NAME`, or OS default (Safari).
+
+Config checking now looks for either `${XDG_CONFIG_HOME}/brew-url` or `${HOME}/.brew-url` so you can set the script variable `browser` to the app name of the browser you wish `brew-url` to use as it's default.
+
+The config variable `browser` takes precedence over the environment variable `BROWSER_NAME`. And the environment variable takes precedence over the OS default.
 
 
 #### `brew url -c <package>`
@@ -19,7 +25,7 @@ Also `brew url --chrome <package>`. Specifies to use _Google Chrome_ instead of 
 
 #### `brew url -d <package>`
 
-Also `brew url --default <package>`. Specifies to use the default OS browser (_Safari_) to review the packages website.
+Also `brew url --default <package>`. Specifies to use the default OS browser (typically _Safari_) to review the packages website.
 
 
 #### `brew url -f <package>`
@@ -44,7 +50,7 @@ Also `brew url --version` can be used to display the version of `brew-url`.
 
 ### `brewlist`
 
-This simple helper creates the file `${USER}-brew-list.md` wherever you are in your file system with all the packages currently installed on your system.
+This simple helper creates the file `${USER}-brew-list_YYYY-MM-DD_HHMMSS.md` wherever you are in your file system with all the packages currently installed on your system.
 
 
 #### `brewlist -e <file_extension>`
@@ -74,18 +80,29 @@ Also `brewlist --version` can be used to display the version of `brewlist`.
 
 ### `brewup`
 
-Runs `brew update` and saves the output to a dated logfile in your home directory.
+Runs `brew update` and saves the output to a dated logfile in your brewup directory which will be one of the following.
+
+- $XDG_CONFIG_HOME/brewup
+- $HOME/.local/brewup
+- $HOME/.brewup
+
+if `XDG_CONFIG_HOME` is defined then `$XDG_CONFIG_HOME/brewup` will be created. If not and `$HOME/.local` exists then `$HOME/.local/brewup` will be created. Else `$HOME/.brewup` will be created.
 
 
 #### `brewup list`
 
 If you run either of `brewup -l`, `brewup last`, or `brewup list` you will get the output of the last logfile created.
 
+#### TODO
+
+- Automatically archive (gzip) older logs to save space.
+- Automatically delete logs after a certain amount of time weather they are archived or not.
+
 
 Installation
 ------------
 
-Copy the scripts into your `bin` directory. All commands should work as expected. In the bin directory you can make sure the command is executable with something like `chmod +x brew*` for the current user only. But this may not be necessary. Test with `brew url wget` in Terminal (or iTerm2, etc.) to make sure it's working as expected.
+Copy or symlink the scripts into your prefered `bin` directory. All commands should work as expected. In the bin directory you can make sure the command is executable with something like `chmod +x brew*` for the current user only. But this may not be necessary. Test with `brew url wget` in Terminal (or iTerm2, etc.) to make sure it's working as expected.
 
 ### Example Installation
 
@@ -109,4 +126,5 @@ Mac:~ runeimp$
 Guarantee
 ---------
 
-It works on my system. I make no statement of fitness for your usage. It makes me happy. But use at your own risk. :angel:
+It works on my system. I make no statement of fitness for your usage. It makes me happy. Use at your own risk. :angel:
+
