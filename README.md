@@ -1,4 +1,4 @@
-Homebrew Helpers v0.4.0
+Homebrew Helpers v0.4.1
 =======================
 
 A collection of helpers to extend or assist the wonderful Homebrew package manager for macOS/OS X.
