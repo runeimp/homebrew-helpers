@@ -1,4 +1,4 @@
-Homebrew Helpers v0.4.1
+Homebrew Helpers v0.5.0
 =======================
 
 A collection of helpers to extend or assist the wonderful Homebrew package manager for macOS/OS X.
@@ -78,25 +78,10 @@ Also `brewlist --suffix` can be used to specify a suffix to append to the base f
 Also `brewlist --version` can be used to display the version of `brewlist`.
 
 
-### `brewup`
+### BrewUp
 
-Runs `brew update` and saves the output to a dated logfile in your brewup directory which will be one of the following.
+See [brewup.md](brewup.md)
 
-- $XDG_CONFIG_HOME/brewup
-- $HOME/.local/brewup
-- $HOME/.brewup
-
-if `XDG_CONFIG_HOME` is defined then `$XDG_CONFIG_HOME/brewup` will be created. If not and `$HOME/.local` exists then `$HOME/.local/brewup` will be created. Else `$HOME/.brewup` will be created.
-
-
-#### `brewup list`
-
-If you run either of `brewup -l`, `brewup last`, or `brewup list` you will get the output of the last logfile created.
-
-#### TODO
-
-- Automatically archive (gzip) older logs to save space.
-- Automatically delete logs after a certain amount of time weather they are archived or not.
 
 
 Installation
@@ -114,13 +99,17 @@ Mac:repos runeimp$ git clone git@github.com:runeimp/homebrew-helpers.git
 Mac:repos runeimp$ cd homebrew-helpers
 Mac:homebrew-helpers runeimp$ chmod +x brew*
 Mac:homebrew-helpers runeimp$ cd ~/bin
-Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brew-url.sh brewlist
+Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brew-url.bash brew-url
 Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brewlist.sh brewlist
-Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brewup.sh brewlist
+Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brewup.bash brewup
 Mac:bin runeimp$ cd ~
 Mac:~ runeimp$ brew url wget
 Mac:~ runeimp$
 ```
+
+#### IMPORTANT
+
+The process outlined above has been updates since the last release. A few of the scripts have had their `.sh` file extensions changed to `.bash`. If you've set this up in the past as noted prior then you will need to relink to the scripts with new file extensions. I apologize for any inconvenience. :angel:
 
 
 Guarantee

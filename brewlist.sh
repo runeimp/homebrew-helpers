@@ -8,6 +8,7 @@
 #####
 # ChangeLog
 # ---------
+# 2018-03-22  0.6.0      Now links the app website within the list
 # 2018-03-18  0.5.0      Now lists dependencies as well as apps installed
 # 2017-03-14  0.4.0      Added date to base_filename
 # 2016-07-13  0.3.0      Updated filename generation with $USER
@@ -56,6 +57,40 @@ else
 fi
 base_filename="${base_filename}_${datetime}"
 
+
+#
+# FUNCTIONS
+#
+get_url()
+{
+	local app="$1"
+	result=$(brew info "$app" 2>&1)
+	exit_code=$?
+
+	# echo "result: $result"
+	# echo "exit_code: $exit_code"
+
+	if [[ $exit_code -gt 0 ]]; then
+		result=$(brew cask info "$app" 2>&1)
+		exit_code=$?
+		# echo "result: $result"
+		# echo "exit_code: $exit_code"
+	fi
+
+	if [[ $exit_code -eq 0 ]]; then
+		url=$(echo "$result" | grep -v caskroom --line-buffered | grep -E --color=never ^https?:.* | head -1)
+	else
+		url=""
+	fi
+
+	echo "$url"
+}
+
+
+
+#
+# OPTION PARSING
+#
 until [[ $# -eq 0 ]]; do
 	case "$1" in
 		-e | --ext | --extension)
@@ -104,8 +139,9 @@ declare -i j=0
 
 # echo "\${#app_list[@]}: ${#app_list[@]}"
 # echo "\${#all_list[@]}: ${#all_list[@]}"
-echo "\$app_length: $app_length"
-echo "\$all_length: $all_length"
+# echo "\$app_length: $app_length"
+# echo "\$all_length: $all_length"
+echo "  Application count: $app_length"
 
 while [[ $i -lt $all_length ]]; do
 	j=0
@@ -124,18 +160,36 @@ while [[ $i -lt $all_length ]]; do
 	let "i += 1"
 done
 dep_length=${#dep_list[@]}
-echo "\$dep_length: $dep_length"
+# echo "\$dep_length: $dep_length"
 # exit 69
+echo "  Dependencies count: $app_length"
 
+printf "  Building app list"
 # for item in $(brew app_list); do
 for item in ${app_list[@]}; do
-	apps_list=$(printf "${apps_list}\n* %s" "$item")
+	printf .
+	app_url="$(get_url $item)"
+	# echo "app_url: '$app_url'"
+	if [[ ${#app_url} -gt 0 ]]; then
+		apps_list=$(printf "${apps_list}\n* [%s](%s)" "$item" "$app_url")
+	else
+		apps_list=$(printf "${apps_list}\n* %s" "$item")
+	fi
 done
+echo
+# exit 69
 
-
+printf "  Building dependencies list"
 for item in ${dep_list[@]}; do
-	deps_list=$(printf "${deps_list}\n* %s" "$item")
+	printf .
+	dep_url="$(get_url $item)"
+	if [[ ${#dep_url} -gt 0 ]]; then
+		deps_list=$(printf "${deps_list}\n* [%s](%s)" "$item" "$dep_url")
+	else
+		deps_list=$(printf "${deps_list}\n* %s" "$item")
+	fi
 done
+echo
 
 # while read in $(brew config); do
 # 	conf=$(printf "${conf}\n%s" "$item")
