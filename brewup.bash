@@ -10,6 +10,11 @@
 #####
 # ChangeLog:
 # ----------
+# 2019-01-31  1.3.0      Updated SemVer regex to allow for underscores in the
+#                        pre-release section.
+# 2019-01-19  1.2.0      Updated term_wipe function to work properly in KiTTY.
+#                        Added new message to check if log should be
+#                        automatically removed.
 # 2019-01-11  1.1.0      Added cleanup as it's own option/command.
 #                        Added semver command for compatibility checking.
 #                        Updated SemVer regex.
@@ -33,7 +38,7 @@ readonly APP_AUTHOR='RuneImp <runeimp@gmail.com>'
 readonly APP_DESC='Homebrew Update, Upgrade, Cleanup, Log, and List'
 readonly APP_LICENSE='MIT'
 readonly APP_NAME='BrewUp'
-readonly APP_VERSION='1.1.0'
+readonly APP_VERSION='1.3.0'
 readonly CLI_NAME='brewup'
 
 readonly APP_LABEL="$APP_NAME v$APP_VERSION"
@@ -51,15 +56,34 @@ declare -r LOG_LEVEL_WARNING=2
 
 # Major, Minor, Patch, Pre-release Version, Build Number
 declare -r SEMVER_2_0_0_RE='^(([0-9]+)(\.([0-9]+))(\.([0-9]+)))(-?(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(\+?(([[:alnum:]-]+)(\.[[:alnum:]-])*))?$'
-declare -r SEMVER_CHECK_RE='^(([0-9]+)(\.([0-9]+))?(\.([0-9]+))?)(_(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(-?(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(\+?(([[:alnum:]-]+)(\.[[:alnum:]-])*))?$'
+# declare -r SEMVER_CHECK_RE='^(([0-9]+)(\.([0-9]+))?(\.([0-9]+))?)(_(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(-?(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(\+?(([[:alnum:]-]+)(\.[[:alnum:]-])*))?$'
+declare -r SEMVER_CHECK_RE='^(([0-9]+)(\.([0-9]+))?(\.([0-9]+))?)(_(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(-?(([[:alnum:]]+[[:alnum:]_-]*)(\.[[:alnum:]-])*))?(\+?(([[:alnum:]-]+)(\.[[:alnum:]-])*))?$'
 declare -r SEMVER_DATE_RE='^(([0-9]+)(-?([0-9]{2}))(-?([0-9][0-9]))).?(([0-9][0-9])(\:?([0-9][0-9]))?(\:?([0-9]{2}))?)?(\.?([0-9]+))?([+-][0-9:]{4,5}|[zZ])?$'
-declare -r SEMVER_RE='^(([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(\.([0-9]+))?)(_(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(-?(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(\+?([[:alnum:].-]+))?$'
-
+declare -r SEMVER_RE='^(([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(\.([0-9]+))?)(_(([[:alnum:]-]+)(\.[[:alnum:]-])*))?(-?(([[:alnum:]]+[[:alnum:]_-]*)(\.[[:alnum:]-])*))?(\+?([[:alnum:].-]+))?$'
 
 # ERRORS
 declare -ri ERROR_BAD_ARGUMENT=5
 declare -ri ERROR_SEMVER_PARSE=4
 declare -ri ERROR_VERSIONS_MATCH=3
+
+
+declare -r SKIP_MSG_NO_CHANGES_CORE="$(cat <<EOM
+Updated 1 tap (homebrew/core).
+No changes to formulae.
+EOM
+)"
+declare -r SKIP_MSG_NO_CHANGES_CASK="$(cat <<EOM
+Updated 1 tap (homebrew/cask).
+No changes to formulae.
+EOM
+)"
+declare -r SKIP_MSG_UPDATED_ONE_CASK_="$(cat <<EOM
+Updated 1 tap (homebrew/cask).
+
+EOM
+)"
+
+declare -a SKIP_MESSAGES=( "Already up-to-date." "No changes to formulae." )
 
 
 #
@@ -524,7 +548,7 @@ semver_cmp()
 	build_code=$?
 
 	log_debug "semver_cmp() | version_a = $version_a | version_b = $version_b"
-	log_debug "semver_cmp() |    mmpr_code = $mmpr_code |    mmpr_result = ${mmpr_result[0]} (${mmpr_result[1]})"
+	log_debug "semver_cmp() |   mmpr_code = $mmpr_code |   mmpr_result = ${mmpr_result[0]} (${mmpr_result[1]})"
 	log_debug "semver_cmp() | postre_code = $postre_code | postre_result = '$postre_result'"
 	log_debug "semver_cmp() |  prere_code = $prere_code |  prere_result = '$prere_result'"
 	log_debug "semver_cmp() |  build_code = $build_code |  build_result = '$build_result'"
@@ -948,19 +972,31 @@ smart_cleanup()
 
 term_wipe()
 {
-	if [ "$(uname -s)" = 'Darwin' ] && [ ${#TMUX} -eq 0 ]; then
-		# osascript -e 'if application "Terminal" is frontmost or application "iTerm" is frontmost then tell application "System Events" to keystroke "k" using command down'
-		osascript -e 'tell application "System Events" to keystroke "k" using command down'
-	else
-		if [ -f `which tput` ]; then
+	if [[ ${#VISUAL_STUDIO_CODE} -gt 0 ]]; then
+		clear
+	elif [[ $KITTY_WINDOW_ID -gt 0 ]]; then
+		if [[ -x "$(which tput)" ]]; then
+			echo -ne '\033[22;0t' # Put title in stack
 			tput reset
-			tput cup 0 0
-		elif [ -f `which reset` ]; then
-			reset
+			# tput cup 0 0
+			echo -ne '\033[23;0t' # Restore title from stack
 		else
-			clear; printf '\33[3J'
+			# echo -e \\033c # Reset terminal but leaves one empty line above prompt
+			:
 		fi
-		[ ${#TMUX} -gt 0 ] && tmux clear-history
+	elif [[ "$(uname)" == 'Darwin' ]] && [[ ${#TMUX} -eq 0 ]]; then
+		osascript -e 'tell application "System Events" to keystroke "k" using command down'
+	elif [[ -f "$(which tput)" ]]; then
+		tput reset
+		if [[ ${#TMUX} -gt 0 ]]; then
+			tput cup 0 0
+		fi
+	elif [[ -f "$(which reset)" ]]; then
+		reset
+	else
+		clear
+		# alias cls="clear; printf '\33[3J'"
+		# echo -ne '\033]50;ClearScrollback\a' # For iTerm2
 	fi
 }
 
@@ -1001,8 +1037,6 @@ fi
 #
 # OPTION PARSING
 #
-term_wipe
-
 if [[ $# -eq 0 ]]; then
 	cmd='update'
 else
@@ -1017,6 +1051,7 @@ else
 				cmd=cleanup
 				;;
 			-h | -help | --help | help)
+				term_wipe
 				show_help
 				exit 0
 				;;
@@ -1081,6 +1116,8 @@ fi
 #
 # MAIN ENTRYPOINT
 #
+term_wipe
+
 case "$cmd" in
 	cleanup)
 		# Cleanup multi-version installs
@@ -1143,9 +1180,17 @@ case "$cmd" in
 		brew update | tee -i "$UPDATE_LOG"
 
 		content="$(cat $UPDATE_LOG)"
-		if [[ "$content" = "Already up-to-date." ]]; then
-			rm $UPDATE_LOG
-		fi
+		printf "%s\n" "$content"
+		echo
+		IFS=$'\n'
+		for line in $content; do
+			for msg in "${SKIP_MESSAGES[@]}"; do
+				if [[ "$msg" = "$line" ]]; then
+					rm "$UPDATE_LOG"
+					break 2
+				fi
+			done
+		done
 		;;
 	upgrade)
 		# Upgrade packages
