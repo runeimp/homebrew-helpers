@@ -26,7 +26,7 @@ Runs `brew update` and saves the output to a dated logfile in your brewup direct
 - `$HOME/.local/brewup`
 - `$HOME/.brewup`
 
-if `XDG_CONFIG_HOME` is defined then `$XDG_CONFIG_HOME/brewup` will be created. If not and `$HOME/.local` exists then `$HOME/.local/brewup` will be created. Else `$HOME/.brewup` will be created.
+if `XDG_CONFIG_HOME` is defined then <code>$XDG_CONFIG_HOME/brewup</code> will be created. If not and <code>$HOME/.local</code> exists then <code>$HOME/.local/brewup</code> will be created. Else `$HOME/.brewup` will be created.
 
 
 ### `brewup list`
