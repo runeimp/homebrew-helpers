@@ -1,4 +1,4 @@
-Homebrew Helpers v0.5.0
+Homebrew Helpers v0.6.0
 =======================
 
 A collection of helpers to extend or assist the wonderful Homebrew package manager for macOS/OS X.
@@ -100,7 +100,7 @@ Mac:repos runeimp$ cd homebrew-helpers
 Mac:homebrew-helpers runeimp$ chmod +x brew*
 Mac:homebrew-helpers runeimp$ cd ~/bin
 Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brew-url.bash brew-url
-Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brewlist.sh brewlist
+Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brewlist.bash brewlist
 Mac:bin runeimp$ ln -s ../repos/homebrew-helpers/brewup.bash brewup
 Mac:bin runeimp$ cd ~
 Mac:~ runeimp$ brew url wget
